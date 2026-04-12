@@ -721,46 +721,63 @@ function setST(el,key){
 
 function renderST(){
   var rows=sortStData(stRows);
-  var cols=stHeaders.filter(function(h){return h&&h.toLowerCase()!=='rank'&&h!=='#';});
-  var h='<table><thead><tr><th style="width:32px">#</th>';
-  cols.forEach(function(c){h+='<th>'+c+'</th>';});
-  h+='</tr></thead><tbody>';
-  rows.forEach(function(row,i){
-    h+='<tr><td class="rk">'+(i+1)+'</td>';
-    cols.forEach(function(c){
-      var v=row[c]||'',cl=c.toLowerCase(),n=parseFloat(v);
-      if(cl.indexOf('team')>=0){
-        h+='<td><div class="fname">'+v+'</div></td>';
-      } else if(cl.indexOf('record')>=0){
-        var pts=v.split('-');
-        var rh=pts.length===2?'<span class="rw">'+pts[0]+'</span><span class="rd">-</span><span class="rl">'+pts[1]+'</span>':v;
-        h+='<td class="mono">'+rh+'</td>';
-      } else if(cl.indexOf('diff')>=0){
-        var dc=n>0?'diff-pos':n<0?'diff-neg':'diff-neu';
-        h+='<td class="'+dc+'">'+(n>0?'+':'')+v+'</td>';
-      } else if(!isNaN(n)&&v!==''){
-        h+='<td class="mono '+(n>0?'pos':n<0?'neg':'neu')+'">'+v+'</td>';
-      } else {
-        h+='<td class="mono neu">'+v+'</td>';
+
+  // Find column keys
+  function findCol(){
+    var names=Array.prototype.slice.call(arguments);
+    for(var n=0;n<names.length;n++){
+      for(var j=0;j<stHeaders.length;j++){
+        if(stHeaders[j].toLowerCase().indexOf(names[n].toLowerCase())>=0) return stHeaders[j];
       }
-    });
-    h+='</tr>';
+    }
+    return null;
+  }
+  var hTeam=findCol('team');
+  var hRec=findCol('record');
+  var hPF=findCol('scored','points for','pf');
+  var hPA=findCol('allowed','points against','pa');
+  var hDiff=findCol('diff','differential');
+
+  var h='<table><thead><tr>'+
+    '<th style="width:44px;text-align:center">#</th>'+
+    '<th>Team</th>'+
+    '<th style="text-align:center">Record</th>'+
+    '<th style="text-align:center">PF</th>'+
+    '<th style="text-align:center">PA</th>'+
+    '<th style="text-align:center">Diff</th>'+
+    '</tr></thead><tbody>';
+
+  rows.forEach(function(row,i){
+    var team=hTeam?row[hTeam]:'';
+    if(!team||!team.trim()) return;
+    var rec=hRec?row[hRec]:'';
+    var pf=hPF?row[hPF]:'';
+    var pa=hPA?row[hPA]:'';
+    var diff=hDiff?row[hDiff]:'';
+    var diffN=parseFloat(diff)||0;
+    var recPts=rec.split('-');
+    var recH=recPts.length===2?'<span class="rw">'+recPts[0]+'</span><span class="rd">-</span><span class="rl">'+recPts[1]+'</span>':rec;
+    var logo=getTeamLogo(team);
+    var color=getTeamColor(team);
+
+    h+='<tr style="border-left:4px solid '+color+'">'+
+      '<td class="rk" style="text-align:center;font-size:16px;font-weight:700">'+(i+1)+'</td>'+
+      '<td>'+
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          (logo?'<img src="'+logo+'" style="height:36px;width:36px;object-fit:contain;flex-shrink:0">':'')+
+          '<div class="fname" style="font-size:15px;font-weight:700">'+team+'</div>'+
+        '</div>'+
+      '</td>'+
+      '<td class="mono" style="text-align:center;font-size:13px">'+recH+'</td>'+
+      '<td class="mono pos" style="text-align:center;font-size:13px">'+pf+'</td>'+
+      '<td class="mono" style="text-align:center;font-size:13px;color:var(--txt2)">'+pa+'</td>'+
+      '<td class="mono" style="text-align:center;font-size:13px" class="'+(diffN>0?'diff-pos':diffN<0?'diff-neg':'diff-neu')+'">'+(diffN>0?'+':'')+diff+'</td>'+
+      '</tr>';
   });
+
   h+='</tbody></table>';
   document.getElementById('st-body').innerHTML=h;
 }
-
-/* ── NAV ── */
-function go(page,el){
-  document.querySelectorAll('.pg2').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('on');});
-  document.getElementById('pg-'+page).classList.add('on');
-  if(el) el.classList.add('on');
-  curPage=page;
-  if(page==='fs') loadFS();
-  else if(page==='st') loadST();
-}
-
 loadFS();
 
 /* ── THEME TOGGLE ── */
