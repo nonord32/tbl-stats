@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TBL Stats — Team Boxing League</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#000000;
+  --sur:#0d0d0d;
+  --card:#111111;
+  --card2:#1a1a1a;
+  --b:rgba(255,255,255,0.08);
+  --bhi:rgba(255,255,255,0.16);
+  --acc:#ff3c00;
+  --acc2:#7c5cfc;
+  --grn:#00c965;
+  --red:#ff3c00;
+  --yel:#ffd600;
+  --txt:#f0eeff;
+  --txt2:#9b95c0;
+  --txt3:#5a5578;
+  --fm:'IBM Plex Mono',monospace;
+  --fb:Verdana,Geneva,Tahoma,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--fb);font-size:12px;line-height:1.5;min-height:100vh}
+
+/* ── TOP NAV ── */
+#topnav{
+  background:var(--sur);
+  border-bottom:3px solid var(--acc);
+  display:flex;align-items:stretch;
+}
+.logo-wrap{
+  padding:0 20px;
+  border-right:3px solid var(--acc);
+  display:flex;align-items:center;gap:10px;
+  min-height:48px;
+}
+.logo{
+  font-family:var(--fm);font-size:18px;font-weight:700;
+  letter-spacing:.04em;color:var(--txt);
+}
+.logo span{color:var(--acc)}
+.logo-sub{
+  font-family:var(--fm);font-size:9px;letter-spacing:.14em;
+  color:var(--txt3);text-transform:uppercase;border-left:1px solid var(--b);
+  padding-left:10px;
+}
+.nav-tabs{display:flex;align-items:stretch}
+.ntab{
+  display:flex;align-items:center;padding:0 20px;
+  font-family:var(--fm);font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--txt3);cursor:pointer;
+  border-right:1px solid var(--b);
+  border-bottom:3px solid transparent;
+  margin-bottom:-3px;
+  transition:all .12s;
+}
+.ntab:hover{color:var(--txt);background:rgba(255,255,255,.03)}
+.ntab.on{color:var(--acc);border-bottom-color:var(--acc);background:rgba(255,60,0,.06)}
+.nav-right{
+  margin-left:auto;display:flex;align-items:center;
+  padding:0 16px;font-family:var(--fm);font-size:9px;
+  color:var(--txt3);letter-spacing:.06em;
+}
+
+/* ── MAIN ── */
+#main{max-width:1140px;margin:0 auto;padding:0}
+.pg2{display:none}.pg2.on{display:block}
+
+/* ── SECTION HEADER (brutalist) ── */
+.sec-hdr{
+  background:var(--card);
+  border-bottom:3px solid var(--b);
+  padding:16px 24px;
+  display:flex;align-items:baseline;
+  justify-content:space-between;
+  flex-wrap:wrap;gap:8px;
+}
+.sec-title{
+  font-family:var(--fm);font-size:22px;font-weight:700;
+  letter-spacing:.04em;color:var(--txt);
+}
+.sec-title span{color:var(--acc)}
+.sec-meta{font-family:var(--fm);font-size:9px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase}
+
+/* ── METRICS STRIP (brutalist) ── */
+.metrics{display:flex;border-bottom:3px solid var(--b)}
+.metric{
+  flex:1;padding:14px 20px;
+  border-right:2px solid var(--b);
+  background:var(--card);
+}
+.metric:last-child{border-right:none}
+.metric-val{
+  font-family:var(--fm);font-size:24px;font-weight:700;
+  line-height:1;letter-spacing:-.01em;
+}
+.metric-lbl{
+  font-family:var(--fm);font-size:9px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--txt3);margin-top:4px;
+}
+
+/* ── CONTROLS ── */
+.ctrl{
+  display:flex;gap:0;
+  border-bottom:2px solid var(--b);
+  background:var(--card);
+  flex-wrap:wrap;
+}
+.ctrl input,.ctrl select{
+  background:transparent;
+  border:none;border-right:2px solid var(--b);
+  color:var(--txt);font-family:var(--fm);font-size:11px;
+  padding:10px 14px;outline:none;
+  transition:background .1s;
+}
+.ctrl input{width:220px}
+.ctrl input::placeholder{color:var(--txt3)}
+.ctrl input:focus,.ctrl select:focus{background:rgba(255,255,255,.04)}
+.ctrl select{cursor:pointer;appearance:none;padding-right:28px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%235a5578' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.ctrl-divider{width:2px;background:var(--b)}
+.sort-btns{display:flex}
+.sbtn{
+  background:transparent;border:none;border-right:2px solid var(--b);
+  font-family:var(--fm);font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--txt3);padding:10px 16px;cursor:pointer;
+  transition:all .1s;white-space:nowrap;
+}
+.sbtn:hover{color:var(--txt);background:rgba(255,255,255,.04)}
+.sbtn.on{background:var(--acc);color:#fff;border-right-color:var(--acc)}
+.sort-label{
+  display:flex;align-items:center;padding:0 14px;
+  font-family:var(--fm);font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--txt3);
+  border-right:2px solid var(--b);
+}
+.clbl{
+  display:flex;align-items:center;padding:0 14px;
+  font-family:var(--fm);font-size:10px;color:var(--txt3);
+  margin-left:auto;border-left:2px solid var(--b);
+}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;border-bottom:2px solid var(--b)}
+table{width:100%;border-collapse:collapse;min-width:560px}
+thead th{
+  background:var(--card2);
+  padding:8px 14px;text-align:left;
+  font-family:var(--fm);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);
+  border-bottom:2px solid var(--b);border-right:1px solid var(--b);
+  cursor:pointer;white-space:nowrap;user-select:none;
+  transition:color .1s;
+}
+thead th:last-child{border-right:none}
+thead th:hover{color:var(--txt)}
+thead th.s{color:var(--acc)}
+tbody tr{border-bottom:1px solid var(--b);transition:background .08s}
+tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
+tbody tr:hover{background:rgba(124,92,252,.08)}
+tbody tr:first-child{border-left:3px solid var(--acc)}
+td{
+  padding:8px 14px;vertical-align:middle;
+  border-right:1px solid rgba(255,255,255,.04);
+}
+td:last-child{border-right:none}
+
+/* ── CELL TYPES ── */
+.rk{
+  font-family:var(--fm);font-size:12px;font-weight:700;
+  color:var(--txt3);width:32px;min-width:32px;
+}
+tbody tr:first-child .rk{color:var(--acc)}
+.fname{font-weight:700;font-size:12px;font-family:var(--fb);color:var(--txt)}
+.fmeta{font-size:10px;color:var(--txt3);margin-top:2px;font-family:var(--fm)}
+.team-box{
+  display:inline-block;background:var(--card2);
+  border:1px solid var(--b);
+  font-family:var(--fm);font-size:9px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:var(--txt2);padding:2px 7px;
+}
+.mono{font-family:var(--fm);font-size:11px}
+.pos{color:var(--grn);font-weight:700}
+.neg{color:var(--red);font-weight:700}
+.neu{color:var(--txt3)}
+.rw{color:var(--grn);font-weight:700}
+.rl{color:var(--red)}
+.rd{color:var(--txt3)}
+.pct-above{color:var(--grn);font-family:var(--fm);font-size:11px;font-weight:700}
+.pct-below{color:var(--red);font-family:var(--fm);font-size:11px;font-weight:700}
+.pct-even{color:var(--txt3);font-family:var(--fm);font-size:11px}
+.diff-pos{color:var(--grn);font-family:var(--fm);font-size:11px;font-weight:700}
+.diff-neg{color:var(--red);font-family:var(--fm);font-size:11px;font-weight:700}
+.diff-neu{color:var(--txt3);font-family:var(--fm);font-size:11px}
+
+/* WAR bar */
+.war-wrap{display:flex;align-items:center;gap:7px}
+.war-bar{width:48px;height:4px;background:var(--b);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.war-fill{height:100%}
+.war-val{font-family:var(--fm);font-size:11px;font-weight:700;min-width:34px;text-align:right}
+
+/* ── FOOTER ── */
+.site-footer{
+  background:var(--card);border-top:2px solid var(--b);
+  padding:12px 24px;display:flex;
+  justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:8px;
+}
+.gl{display:flex;gap:16px;flex-wrap:wrap}
+.gi{font-family:var(--fm);font-size:9px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase}
+.gi strong{color:var(--txt2)}
+.site-footer p{font-family:var(--fm);font-size:9px;color:var(--txt3);letter-spacing:.06em}
+
+/* ── STATE ── */
+.state{padding:60px 24px;text-align:center}
+.stit{font-family:var(--fm);font-size:18px;font-weight:700;color:var(--txt2);margin-bottom:6px;letter-spacing:.04em}
+.smsg{font-family:var(--fm);font-size:11px;color:var(--txt3)}
+.spinner{width:20px;height:20px;border:2px solid var(--b);border-top-color:var(--acc);border-radius:50%;animation:rot .7s linear infinite;margin:0 auto 12px}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+
+/* ── HERO BLOCK ── */
+.hero-block{
+  background:var(--card);
+  border-bottom:3px solid var(--b);
+  display:block;
+  min-height:0;
+}
+.hero-left{
+  padding:20px 28px;
+  border-right:none;
+  display:flex;flex-direction:column;justify-content:center;
+  min-width:0;
+}
+.hero-tag{
+  font-family:var(--fm);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--acc);margin-bottom:8px;
+}
+.hero-title{
+  font-family:var(--fm);font-size:36px;font-weight:700;
+  letter-spacing:.02em;line-height:1;color:var(--txt);
+}
+.hero-title span{color:var(--acc)}
+.hero-sub{
+  font-family:var(--fm);font-size:9px;color:var(--txt3);
+  letter-spacing:.08em;margin-top:8px;text-transform:uppercase;
+}
+.hero-block .metrics{
+  flex:1;display:flex;border-bottom:none;
+}
+.hero-block .metric{
+  flex:1;display:flex;flex-direction:column;
+  justify-content:center;padding:20px 24px;
+  border-right:2px solid var(--b);border-bottom:none;
+}
+.hero-block .metric:last-child{border-right:none}
+
+@media(max-width:700px){
+  .logo-sub{display:none}
+  .ctrl input{width:140px}
+  .hero-left{min-width:100%;border-right:none;border-bottom:2px solid var(--b)}
+  .hero-title{font-size:26px}
+  .site-footer{padding-left:14px;padding-right:14px}
+  .metrics{flex-wrap:wrap}
+  .metric{min-width:50%}
+}
+</style>
+</head>
+<body>
+
+<div id="topnav">
+  <div class="logo-wrap">
+    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAClAGQDASIAAhEBAxEB/8QAHQAAAgMAAwEBAAAAAAAAAAAAAAcFBggCBAkBA//EAEYQAAEDBAAEAwMGCQwBBQAAAAECAwQABQYRBxIhMRNBUQgiYRQVMlJxgRcjQmJ0kqG00QkWMzY3VldygpGV06I0Q1Sksf/EABwBAAAHAQEAAAAAAAAAAAAAAAABAgMEBQYHCP/EADgRAAEEAQIDBgMECgMAAAAAAAEAAgMRBAUhEjFBBhRRYXGBEyIyByOR4RUzNDVCUpKxwfCh0fH/2gAMAwEAAhEDEQA/AMZUUUUEEUUUUEEUw+EfD1OUW6+ZVe1TGMXx1lDtwcioCnnlLVyoZb30ClE9VHokbJ30BXoGyAPOtBZPdHeHfB6BwstV1Crhc3RdciUyhSNJeYZWzH5j9Icqtq102Neu34I+NyalfwtUFGz+BaJHJjPD/EYMNI0hE6Am4PKHqtx7e1f5QkegFSkWXgPE6Qix3/G7Th1+lENwLzZ2yzELp6JRIY2UhCj050a5d7II3SwrvWC1zb3fYFmtrYcmz5LcaOgqCQpxaglI2e3UjrVo6FhFKCJHA2qxlFkuWN5DPsN3jqjz4D6mH21eSknR+0fGo2nn7blvRbeM6GHHkSLj8zwhcXkjQdkBoJK/vCUn76RlUzhR2VkDYRRRRSUaKKKKCCKKKKCCKKKZ3DzhPLvViZyzI5ibPjzjpQx03KnlP0gwj0HYrVpI35n3SCQASTQCdhhknkEUTS5x5AcylrHStTyeRClkEHSRunjx8tTwvlszAPNGFk8FuXEYIUl5hKEIbKHEkdNKSQCCQQKskR2LamxGxyA1ZYqQUpTHP45aT0PiO/TcJ7nZ5dk8qUjpX72a3MX66wrFOgm4x5shLPgc2lhSyE8zaj9BfYhXbppQKdgxYNZijlDQCQev5LaTfZ1ndzdM+RoeBfD/AILuV+1eaRVXXgpbbzN4kWebZbXJuL9rltTy2yjm6trSpAPUdCvlT3HfuKiOIONyMPza8YxKdS87bZS2PESNBxIPuq15bGjry3Te4SXK+4v7LHEPJMVYeTd3rgxDVKZZ51tMBKSojp00HFdfLm30OjWllfTLC5nG23UUqfamvkDIeNl6uMF9EhQSyxKfbcK23ZDbSUOlBP5HMkgeWgCOlK6vqiSolW9k9d18qlcbKsgKCKKKKJGiiiiggiiim1wo4KZDk1lkZne4btuxCA2X35Lq0srlJT+Qzz9CSenNogfnHSSddUbWlzg0cyurwS4dRchdOT5Wp6NikF5KHeQgOznNj8Q1sjfQ7Ur8lPXuUgtLMbyqZcX5khxtMSMnwYzbCPxUeOnohttI+igDy+0nqSa6twmNqabShhiBBitBDEZkqDLCEgfRCiT11sknZJJPU1RV3J26z3rkpxMS1QPdLxSSpRV9FKdEErVykgbGgCT0BqrAk1J5ZGKY3/n8z08F1KCDF7G47cjJcHTybVXLlfnQ6/zctlNXLIYkSN4p37wPh9jz+hGj1B9Qft1Vo4R5MRmlpu0CM6oxrg0kIWAC4CQFAE9BsEj4d6Ul0vTTplNQYTbLTx0XFlRWof5d8gJ77A3+ca/L5/uIgriNrS2HP6RaNhS99/PQ35kAE+fc1YDQmhgLdnWFSy/aHJJPIyUcURa4UBzNEDc1QPM7X0Utxfv0fJ+KOSX+IrmizLi6uOr6zfNpB+9IBrv8OuLOc4GYzNgu/Jb2XFrXb3W0qjvleubxE9CokADm3sAaBFUWitDwCuErmPEbsJ85Hwtx3jjic/P+FkBFmyWGR88Y2nXhLWQSFsHprm0rQ0AdEdCPey8+06w+th5tTbrailaFDRSR3BFaH4EcZb/hF1h2qMMahW6S4hmVLkWlIWEAnRccZ5XFgbPVRURsnr2p5e0D7M+J5tJm5vZcgYx+5TAl17nIXBfdXoBZUNFHMSNqGwd711qryIuFynQycQWA6Kns9xG/4Pk8rHMkgLhT4ytKSrqlSfJSSOikkdiKgajEUn7tFFFFEgtPeyHw6w9vD73xk4hsNyrPZVqbiRXUBaFuJCSVFJ6LO1oSlJ6FRO+1U/jRxYyLiXe1OS3VwrKwrUC1NL0ywgdASBoKXruo+uhodKtHFPIVYtwRwbhhjytWq52Zi93KSeqpTrq1K8P4JQtB+0pT6HadtkCbdLgxbrdFelzJDgbZYZQVLcUewAHUmrXGiDRxFQJpCTQUqb3IuURi2z5oixkf0rwQVrcA7DQ7n4bAJ7kV+udxbna5kazTLVLtEZhlL0WLJTyuKQ4kK8ZfqtY1v00E9kgBs2bEbBw4Ww9O+SX3L2EhXhjTkS3PHrtXk84jsEjaEq2SVaCU9b2nI8++Y7g2fPlT/wAqtqrVLeKuZXjsOr0Vn6y0qKuvfRqNjZWMJjjwjxJrxV/qmm6q/DZqWcSQaa2+dVt6Db35+aRlFFFWizKK5ISpawhCSpSjoADZJrjTFwGxCFaGr7JA+UzCfkaQerbSSUqcPoVKBSOu9JVsaUDUbLyWYsRkd0Vno+lTarmMxYebuvgOp9vyVLn2K9wIxlTrNcYrAVyeK9GWhHN6bI1v4VZbBxUzayRY0OHdueKxDXAUw+2HG3oqt/iXEq6LQnmXy76p51AEA6pk4fkErG741co7aJDfVuTFdG2pLJ+m0sEEEEeoOjo9wKls84RYLnkd6+cJbm3b7ysFx3GZig2Vq0SUsE+fQnlBUn4p7VW4WsQ5XyyCitF2i7F5ejEPjJkjr6gKr1FmvVU/ji3cM39mjBM8kRlSp9mffs9xmjqotBX4krPfsO581H61ZvrSHCXihb8Wwy/8K88sMiRj91ecTIW2NSYLqglCjyK+lylCVa6EKSe/ak7xQwWdg95ZZXJZuNqnNfKbXc4/9DMYJ6KHoodlJPVJBBp3IiLTdbLMwvBFKo0UUVFT60Rw3k2u+cG7LFzKypu7EOdLi295mSqNLjspDbhSF6UlSCt1RAUlWtHWt1Y7ddLTjkR2LhNiRY1Po5H5zj5kTnEnugPEJCEnzDaU78yaqGAp5OHFgSOym31n7S8sH9iRUtVLqGdOJHRB1N/Jdk7JdmdMkwIMyWIOkNmzZ/iNbcth5IphYtEYybgLxExmcW0ot8UXqGtWttvNpJV1+IbSn7FH1pe0wrFAdV7NXE+Y0/4anW4yOnQ6bWFqG/QhZGv40zpN97bRVl284P0JLxC+Vetj/FrK1FFFdAXnNFNLFbgi4WOMpICVMNpYWkeRQkJB+8AH76VtTdlN+ttofvsOK+LYX0xHZBRtoOlJUlG+3NyhR+yq3VMM5cHA00QbC1HZDXY9E1D48rSWlpaa59DY9wPZXi5XuHCcCFuJURvmAUNg+nUjR8/sB+Fc4eRWxREhi4Brw1jlcO29K7jROutMjMcYxzF+FFgsFzxmE5ll3jpn3CVIRzvxmlE8jYUfoqPY8uh7qunUEJnJMUjJgOSbalxDjQK/CK9pKe51vrv7+uta2azjcPC+IIHvId49F009oNekxHajBA10O54T9VDr6c75k1sArDmNoay+WbpMuKmru4kBcpxPM2/oAJLhSObm1va/eJ0Ng9TVgVgMm+8C7xgCJsC8ZVZrj872aPCf8VTzCkpQ+21sAqHulfuggkdCTsUssMyFMQC3zlLLSlDwl9TyH6v2Ve2p2IP8QLVFvmSXbGptriR24d4gJS80w8XXHiXU9FADxkp2k+6UqBBHWrfFGUyQ4027QLB/3/1YXX2aRlYbNTwfkkc6nMvYGiSfLltWx8jazjIZdjvrYfbW062opWhY0UkdwRRTn9tCzfIfaEvrsVlsRpzUeY0tvXK7zsp5ljXTqsLNFGWHoFmA4dVJ4P8A2dY3+iun/wCy9UpUXhH9nWN/orv7y9UpWX1D9pd/vReheyH7lx/Q/wByimfxQtV/w32Q5USTHcjPXi8trltKGltMnWgr02WUfcrXqKodptjb0KTeblKah2S3rbNwklYK20qOhytj31KUfdGhrZGyB1rucXPaSHELhVOxGTixgzZTzRMlErnbCEOBe+UjYUeUDWz3J35VaaHiPL/jVsFi/tJ1mP4bNPjcL5u8RX0j3sn8FnmiiitiuNIrcnsn43iGX+z7Z4dysokC33tyW8l0kJdloVtDnTXMA2tCdHY6aIOqw3Xofg0vFLL7Ob0bh9dos9uDZXXfEYfHih4tlS3FgHmSrmJVo6I1oeVQs5/BHamYMJmmDB12/FZ14hZArKc1ut+PMESnyWgoaKWk+6gH4hITv41A0UVzxzi5xceq9V48DMeJsLB8rQAPQbLjcsSM+3xbjgUKGm+NoLU2EdeMo7PK/GCzokp0FJT76VAqT0Pu097hVxP+WoYdwLJy88vQUbc6Ukk9yvWvtJNXKqjxqvV4t9nsMWBdJsVh5qQHWmX1ISv3x3AOjWn0vVXv+6cNwOa43227Iw4LTmwvIa51cFbC7Jo+3KvdfPaGypl3KbLYkKjzXsbx+FZpUhtQcS4+0klzSvyglSyjfny7opOkkkknZNFWPeXjkue/Bb1TljZLdrDwww5u2LhoDzMorLsFh5R1IVrq4hRA6noOnWrvbsR9oG4W+PPh4m27GktJeZX82W8cyFAFJ0U7GwR3qg2+1O3zGeGlkY34twceio16uSykf/temsVhqNGajMICGmkBCEjslIGgP9qXIImNaeAEnxCdhzMsW1krgByAcQFhZ3EPaPdtYtb2Hx3oId8bwHbRbFoLmtcxBR1Oum/Kul+Djjz/AIdWj/gLT/11vqiibk8IoNATUkbpXF73Ek9SbXnxdsN402lEZdwwOzRxKktxWObH7Ued1w6Qgab7k13fwccef8OrR/wFp/661XlV/tGR8ZcVwmBOalybK+9eboy0ebwPDZU00lZ7BXO+Fcvcco3rYpmuLQ22pxxSUISCpSlHQAHcmluynAD5QmxADe5WB/wccef8OrR/wFp/66hMkTxf4eclxu+LQbGl1C2Ey0Y1ACdOIKFI8RDJA5klQ1vZBNb4xrMsSyaQ7Gx3JrPdnmUc7jcOY28pCd62QknQ35184iW62XbBL5b7y225b3oDwfCxsJSEE83wI1sHyIBod5N05oRiGvma42sB4K7xazj5Z/NS1Rbp8i5PlBatUFPh8/Ny75kDvyq/2qZvuN8ebHZ5V3u2MsRIMRouvvLttv0hI7nondPn2CbJ8g4T3C8rRpy6XNfKr1aaSlI/8vEqc9ta+fNHAifFSvlcustiEnXfXN4qv/Foj76Iti+LwCNv4KUM/N+HxGd/9R/7WKvwiZV/8i2/8PE/6q63GS4yrtieFz5vgGQ7Glc6mo7bIOpCwPdQAN6AG9eVVypfiZ/UPBv0aZ+9Lp7IgijYS1oB8go7c7JnPDLI5w8CSf7pe0UUVWp5NG4uuscOsFeZcW06hmWpC0KIUkiSrRBHY1McIn8gyTihjVjVerotqXcmEvD5U4fxQWCvz+qFVCXf+zTCP0eX+8Kpqew3Y/nTjci4rRtFot78kEjoFqAaA+3Tij91W4IbBfkq8i5aW9q87/aczO7XHjnk5g3ecxFiSRDbbZkKSlJZSG1dAfrpUfvr0Hus1i22yXcZKuViKyt50+iUpKj+wV5TXie/dLvMuck7fmSFvun1UtRUf2mo2C23Ep7JdQAWqf5Pmzren5blMjmWvlZhtuKOyoqKnHNn/S2fvrVeQ2753sFxtPylyL8tiux/Gb1zt86CnmTvpsb2KT/sTWP5p4Ew5ikcrl2mPzFbHXQV4Sf2NA/fVh9oXiy1wmx+23L5nF3kT5ZYRHMrwNJCCpS+blVvR5RrX5XfpTU1yTENTkdMjFrhwN4LWHhRIukm13OdcX7ihtClyggeGlBUdJ5QO5V136CqV7VXGvGbPhN5w2yXJE7IJ7SoTzbOymK2ro4Vq7b5dgAHezvtTK4F5+/xLwNGUvWT5nS7JcZaZ+U+PzpRoc/Nyp8+Ya1+TS09s3CLXkcLD5TbCG71Lv8AHtCHkpAW408F7ST5hJSCN9ve9aDN5vvOaDto/kTL9n2x/wA3eCuJ2wo5Fi3NvuJ12W7+NUD/AKlmkD/KF3zb+KY22v6KX5zyd+pShs/scrW7LbbLKGWkBDaEhKUjsAOgFef/ALZdzkXvjxdG2m3XGbZHYhNqCSR0RzqH3LcUPupWKOObiPqkz/LHSSlS/Ez+oeDfo0z96XUaqNISkqUw6ABskoPSpLiZ/UPBv0aZ+9LqZl/q1Hx/rS9oooqoVgmdd/7NMI/R5f7wqtRfye1j8OwZTki0f+olMwm1Hy8NJWsD7fFR/tWV8UybFbpjNvxXLES7WuAXBBu8QeKlAcVzFL7J+knmP0kEEDyV2q5M3zilw3x9tGO5O+MakPKXHnWl0Ow3lkDfva2legNoWEqGuoqzBEsXA07qEbZJxELaXtRXv5h4D5TJSvlckxRCQPM+MoNnX+lSj91eb46nQq25ZxLzzLLV81ZHlFwuULxA74Lyhy8w3o9B8TVUZcWy6h1tXKtCgpJ9CO1PY8JibRTcsnGbC9SeGlk/m3w9x6wlHKuBbmGHB6rSgc5+9WzXcyDG8dyEMi/2C1XcMcxZE6G2/wCHza3y84Ot6G9egrzs/Djxa/v3d/10/wAKPw48Wv793f8AXT/Conc5Lu0/3ltVS9HrTbbdaLe1b7VAiwIbW/DjxmUtNo2STpKQANkk/fSdzO9wct9pfDMOgvIkt40iTdrnyHmCHfD5GUH0UkqBP+cVjyfxm4qToy40jO754axpQbkFskfanRqvYnl+S4ndH7pjt5lW6dIbLTr7ShzrQVBRBJ33KQfupbMNwsk7pLsgGgAvVCivNf8ADjxa/v3d/wBdP8KPw48Wv793f9dP8Kb7i/xCX3pvgtp+1ne/mPgJka0r5XpraILY+t4qwlQ/U5/9q8/uJn9Q8G/Rpn70umHkl2zi/Y3He4t5zNttgUtMqPFlpDkyUQCApmONEjSjpayhHXoSelKjiNlNtv4tltsdrdt9ptLK2YokP+K+7zLK1LcUAE7JJ6JAAHTr3JPDY4iy90GkvfxVsqjRRRUNSUVP4dmGQ4lLcess9TTbyeSTGcSHI8lH1HWlApWn4KBqAoowSNwiIvmmxEmYNmugytjC78v/ANl5alWyQr81Z2uOT6K5kfnIFQ2SY/eccniFeoDsR1SQtsq0pDqD2W2sbStJ8lJJB9aoFXHD+Id6sMH5mltR75YFq5nLVcUlxkE91NkEKaX+c2Un12OlTYswjZyjSY4O7V+NFXKLY8azFPi4HcVR7irqqwXR5KXyfSO90Q8PRJ5F+QCu9VSfDlwJjsKdFeiymVFDrLzZQtCh3CknqD9tT2Pa8WFEc0t5r8KKl8Yxu9ZJLXHs8Fcjwk877qlBDMdH13XFEIbT8VECpWXc8FwraWgxmt+T5nmRa4yv2LkEH15EfBYopJWsG6UyNzuS62OYfc7vAXd33Y1osbSuV663BZajpI7pT0KnV/mNhSvhrrXOZnOOYntjAoBn3JPQ3+6MJK0n1jxztDXwWrnX5goPSqVl+WZBlk9My+3FySptPIy0AENMI8kNtp0lCR9VIAqDquly3O2apccAbuV27vcrhd7i9cbrOkTpj6it199wrWsnzJPU11KKKiE2pCKKKKCCKKKKCCKKKKCC+pJSoKSSCOxFMbHuJUiZGZtObWhjK4bCOWM7IeU1MYAHRKZCfeKPLkVzADegk9aKKdhcQ8UkSAFpUNmfEC+ZHETakiPabGyrmZtNvQWoyD9ZQ2S4v89ZUr41UaKKQ5xcbKUAANkUUUUlGiiiiggiiiiggv/Z" style="height:36px;width:auto;display:block;flex-shrink:0">
+    <div class="logo-sub">2026 Season</div>
+  </div>
+  <div class="nav-tabs">
+    <div class="ntab on" data-page="fs" onclick="go('fs',this)">Fighter_Stats</div>
+    <div class="ntab" data-page="st" onclick="go('st',this)">Team_Standings</div>
+  </div>
+  <div class="nav-right" style="display:flex;align-items:center;gap:12px">
+    <span id="fetch-time"></span>
+    <button id="theme-toggle" onclick="toggleTheme()" style="
+      background:var(--acc);border:none;
+      border-radius:4px;color:#fff;
+      font-family:var(--fm);font-size:9px;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;padding:6px 12px;cursor:pointer;
+      transition:all .15s;white-space:nowrap;
+    ">☀ LIGHT</button>
+  </div>
+</div>
+
+<div id="main">
+
+  <!-- ── FIGHTER STATS ── -->
+  <div id="pg-fs" class="pg2 on">
+    <div class="hero-block">
+      <div class="hero-left">
+        <div class="hero-tag">Individual Rankings · 2026 TBL Season</div>
+        <div class="hero-title">FIGHTER <span>STATS</span></div>
+        <div class="hero-sub" id="fs-meta"></div>
+      </div>
+    </div>
+    <div class="ctrl" id="fs-ctrl" style="display:none">
+      <input type="text" id="fs-q" placeholder="/ search fighter or team" oninput="renderFS()">
+      <select id="fs-wt" onchange="renderFS()"><option value="">All weights</option></select>
+      <select id="fs-tm" onchange="renderFS()"><option value="">All teams</option></select>
+      <select id="fs-gd" onchange="renderFS()"><option value="">All genders</option><option value="Male">Male</option><option value="Female">Female</option></select>
+      <div class="clbl" id="fs-cnt"></div>
+    </div>
+    <div class="tbl-wrap" id="fs-body">
+      <div class="state"><div class="spinner"></div><div class="stit">LOADING_</div></div>
+    </div>
+    <div class="site-footer">
+      <div class="gl">
+        <div class="gi"><strong>WAR</strong> Wins Above Replacement</div>
+        <div class="gi"><strong>PPR</strong> Points Per Round</div>
+        <div class="gi"><strong>Net Pts</strong> Total net points</div>
+        <div class="gi"><strong>Win%</strong> Win percentage</div>
+      </div>
+      <p>Data via Google Sheets · Not live · Updates on page refresh</p>
+    </div>
+  </div>
+
+  <!-- ── TEAM STANDINGS ── -->
+  <div id="pg-st" class="pg2">
+    <div class="hero-block">
+      <div class="hero-left">
+        <div class="hero-tag">Team Rankings · 2026 TBL Season</div>
+        <div class="hero-title">TEAM <span>STANDINGS</span></div>
+        <div class="hero-sub" id="st-meta"></div>
+      </div>
+    </div>
+    <div class="ctrl">
+      <div class="sort-label">Sort_by</div>
+      <div class="sort-btns">
+        <button class="sbtn on" onclick="setST(this,'record')">Record</button>
+        <button class="sbtn" onclick="setST(this,'pf')">PF</button>
+        <button class="sbtn" onclick="setST(this,'pa')">PA</button>
+        <button class="sbtn" onclick="setST(this,'diff')">Diff</button>
+      </div>
+    </div>
+    <div class="tbl-wrap" id="st-body">
+      <div class="state"><div class="spinner"></div><div class="stit">LOADING_</div></div>
+    </div>
+    <div class="site-footer">
+      <div class="gl">
+        <div class="gi"><strong>PF</strong> Points For</div>
+        <div class="gi"><strong>PA</strong> Points Against</div>
+        <div class="gi"><strong>Diff</strong> Point Differential</div>
+      </div>
+      <p>Data via Google Sheets · Not live · Updates on page refresh</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var URLS = {
+  fs: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDpxOV--xewT8SdQckLWo70ZEeupxHRcyOYui9nEPQwvbvE2bc5nkOs0JN-XUVpIXwjn3WauVLdeJw/pub?gid=1927967888&single=true&output=csv',
+  st: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDpxOV--xewT8SdQckLWo70ZEeupxHRcyOYui9nEPQwvbvE2bc5nkOs0JN-XUVpIXwjn3WauVLdeJw/pub?gid=1404001793&single=true&output=csv',
+};
+var cache={}, fsData=[], stRows=[], stHeaders=[];
+var fsSortCol='FWAR', fsSortDir=-1;
+var stSortKey='record';
+var curPage='fs';
+
+function splitCSV(line){
+  var r=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){r.push(cur);cur='';}else{cur+=c;}
+  }
+  r.push(cur);
+  return r;
+}
+
+function parseLB(text){
+  var lines=text.replace(/\r/g,'').split('\n');
+  var hi=-1;
+  for(var i=0;i<lines.length;i++){
+    var cells=splitCSV(lines[i]).map(function(c){return c.replace(/"/g,'').trim();});
+    if(cells.indexOf('Fighter')>=0){hi=i;break;}
+  }
+  if(hi<0){console.error('Fighter col not found');return[];}
+  var headers=splitCSV(lines[hi]).map(function(c){return c.replace(/"/g,'').trim();});
+  function ci(){
+    var names=Array.prototype.slice.call(arguments);
+    for(var n=0;n<names.length;n++){for(var j=0;j<headers.length;j++){if(headers[j].toLowerCase()===names[n].toLowerCase())return j;}}
+    for(var n=0;n<names.length;n++){for(var j=0;j<headers.length;j++){if(headers[j].toLowerCase().indexOf(names[n].toLowerCase())>=0)return j;}}
+    return -1;
+  }
+  var iRk=ci('Rank'),iFt=ci('Fighter'),iTm=ci('Team'),iGd=ci('Gender');
+  var iWt=ci('Weight'),iWr=ci('Fighter WAR','FWAR');
+  var iPr=ci('PPR'),iTnp=ci('Total Net Points','Net Points','TNP');
+  var iRc=ci('Record'),iWp=ci('Win %'),iRd=ci('Rounds Fought','Rounds');
+  var rows=[];
+  for(var i=hi+1;i<lines.length;i++){
+    if(!lines[i].trim())continue;
+    var c=splitCSV(lines[i]).map(function(x){return x.replace(/^"|"$/g,'').trim();});
+    if(!c[0]||isNaN(parseFloat(c[0])))continue;
+    var rec=iRc>=0?c[iRc]:'';
+    var pts=rec.split('-');
+    var w=parseInt(pts[0])||0,l=parseInt(pts[1])||0;
+    var wp=iWp>=0&&c[iWp]?parseFloat(c[iWp].replace('%',''))/100:(w+l>0?w/(w+l):0);
+    rows.push({
+      Rank:iRk>=0?parseInt(c[iRk])||0:0,
+      Fighter:iFt>=0?c[iFt]:'',Team:iTm>=0?c[iTm]:'',
+      Gender:iGd>=0?c[iGd]:'',Weight:iWt>=0?c[iWt]:'',
+      FWAR:iWr>=0?parseFloat(c[iWr])||0:0,
+      PPR:iPr>=0?parseFloat(c[iPr])||0:0,
+      TNP:iTnp>=0?parseFloat(c[iTnp])||0:0,
+      Rounds:iRd>=0?parseInt(c[iRd])||0:0,
+      Record:rec,WinPct:wp,Wins:w,Losses:l,
+    });
+  }
+  return rows;
+}
+
+function parseGeneric(text){
+  var lines=text.replace(/\r/g,'').split('\n').filter(function(l){return l.trim();});
+  var hi=0;
+  for(var i=0;i<Math.min(lines.length,20);i++){
+    var cells=splitCSV(lines[i]).map(function(c){return c.replace(/"/g,'').trim();});
+    var ne=cells.filter(function(c){return c;});
+    if(ne.length>=2&&ne[0].length<50&&ne[0].indexOf('=')<0&&isNaN(parseFloat(ne[0]))){hi=i;break;}
+  }
+  var headers=splitCSV(lines[hi]).map(function(c){return c.replace(/"/g,'').trim();});
+  var rows=[];
+  for(var i=hi+1;i<lines.length;i++){
+    var cells=splitCSV(lines[i]).map(function(c){return c.replace(/^"|"$/g,'').trim();});
+    if(cells.every(function(c){return !c;}))continue;
+    var obj={};
+    headers.forEach(function(h,j){obj[h]=cells[j]||'';});
+    rows.push(obj);
+  }
+  return{headers:headers,rows:rows};
+}
+
+function fetchTab(key,cb){
+  if(cache[key]){cb(cache[key]);return;}
+  fetch(URLS[key])
+    .then(function(r){if(!r.ok)throw new Error(r.status);return r.text();})
+    .then(function(t){cache[key]=t;cb(t);})
+    .catch(function(e){console.error('Fetch failed',key,e);cb(null);});
+}
+
+function go(page,el){
+  document.querySelectorAll('.pg2').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ntab,.nl,.elink,.slink,.ptab').forEach(function(l){
+    if(l.dataset.page===page||(page==='fs'&&l.dataset.page==='fs')||(page==='st'&&l.dataset.page==='st')) l.classList.add('on');
+    else if(l.dataset.page) l.classList.remove('on');
+  });
+  document.getElementById('pg-'+page).classList.add('on');
+  curPage=page;
+  if(page==='fs')loadFS();
+  else if(page==='st')loadST();
+}
+
+function setFetchTime(){
+  var el=document.getElementById('fetch-time');
+  if(!el)return;
+  var t=new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  el.textContent='Last fetched: '+t+' · Not live';
+}
+
+function getStCol(row,keys){
+  for(var n=0;n<keys.length;n++){
+    for(var k in row){if(k.toLowerCase().indexOf(keys[n].toLowerCase())>=0)return row[k];}
+  }
+  return '';
+}
+
+function sortStData(rows){
+  var sorted=rows.slice().filter(function(r){
+    for(var k in r){if(k.toLowerCase().indexOf('team')>=0&&r[k].trim())return true;}
+    return false;
+  });
+  sorted.sort(function(a,b){
+    if(stSortKey==='record'){
+      var ar=getStCol(a,['record']),br=getStCol(b,['record']);
+      var ap=ar.split('-'),bp=br.split('-');
+      var aw=parseInt(ap[0])||0,bw=parseInt(bp[0])||0;
+      var al=parseInt(ap[1])||0,bl=parseInt(bp[1])||0;
+      if(bw!==aw)return bw-aw;
+      if(al!==bl)return al-bl;
+      var ad=parseFloat(getStCol(a,['diff','differential']))||0;
+      var bd=parseFloat(getStCol(b,['diff','differential']))||0;
+      return bd-ad;
+    } else if(stSortKey==='pf'){
+      return (parseFloat(getStCol(b,['scored','points for','pf']))||0)-(parseFloat(getStCol(a,['scored','points for','pf']))||0);
+    } else if(stSortKey==='pa'){
+      return (parseFloat(getStCol(a,['allowed','points against','pa']))||0)-(parseFloat(getStCol(b,['allowed','points against','pa']))||0);
+    } else if(stSortKey==='diff'){
+      return (parseFloat(getStCol(b,['diff','differential']))||0)-(parseFloat(getStCol(a,['diff','differential']))||0);
+    }
+    return 0;
+  });
+  return sorted;
+}
+
+function filterFS(){
+  var q=(document.getElementById('fs-q')||{value:''}).value.toLowerCase();
+  var wt=(document.getElementById('fs-wt')||{value:''}).value;
+  var tm=(document.getElementById('fs-tm')||{value:''}).value;
+  var gd=(document.getElementById('fs-gd')||{value:''}).value;
+  var data=fsData.filter(function(d){
+    if(q&&d.Fighter.toLowerCase().indexOf(q)<0&&d.Team.toLowerCase().indexOf(q)<0)return false;
+    if(wt&&d.Weight!==wt)return false;
+    if(tm&&d.Team!==tm)return false;
+    if(gd&&d.Gender!==gd)return false;
+    return true;
+  });
+  data.sort(function(a,b){
+    var av=a[fsSortCol],bv=b[fsSortCol];
+    if(typeof av==='string')return av.localeCompare(bv)*fsSortDir;
+    return (av-bv)*fsSortDir;
+  });
+  return data;
+}
+
+function buildFSFilters(){
+  var weights=[],tms=[];
+  fsData.forEach(function(d){
+    if(weights.indexOf(d.Weight)<0)weights.push(d.Weight);
+    if(tms.indexOf(d.Team)<0)tms.push(d.Team);
+  });
+  weights.sort();tms.sort();
+  var wsel=document.getElementById('fs-wt');
+  if(wsel){wsel.innerHTML='<option value="">All weight classes</option>';weights.forEach(function(w){wsel.innerHTML+='<option>'+w+'</option>';});}
+  var tsel=document.getElementById('fs-tm');
+  if(tsel){tsel.innerHTML='<option value="">All teams</option>';tms.forEach(function(t){tsel.innerHTML+='<option>'+t+'</option>';});}
+  var ctrl=document.getElementById('fs-ctrl');
+  if(ctrl)ctrl.style.display='flex';
+}
+
+function recHTML(rec){
+  var pts=rec.split('-');
+  if(pts.length===2)return '<span class="rw">'+pts[0]+'</span><span class="rd">-</span><span class="rl">'+pts[1]+'</span>';
+  return rec;
+}
+
+function pctSpan(wp,rounds){
+  var pct=Math.round(wp*100)+'%';
+  if(wp===1&&rounds>0)return '<span class="pct-above">'+pct+'</span>';
+  if(wp===0&&rounds>0)return '<span class="pct-below">'+pct+'</span>';
+  return '<span class="pct-even">'+pct+'</span>';
+}
+
+function warBar(fwar,maxW,barClass){
+  var pct=Math.min(100,(Math.abs(fwar)/maxW)*100);
+  var col=fwar>0?'#007a33':fwar<0?'#cc0000':'#ccc';
+  var cls=fwar>0?'pos':fwar<0?'neg':'neu';
+  return '<div class="war-wrap"><div class="'+barClass+'"><div class="war-fill" style="width:'+pct+'%;background:'+col+'"></div></div><span class="war-val '+cls+'">'+fwar.toFixed(2)+'</span></div>';
+}
+
+/* ── FIGHTER STATS ── */
+function loadFS(){
+  var body=document.getElementById('fs-body');
+  if(!body)return;
+  body.innerHTML='<div class="state"><div class="spinner"></div><div class="stit">LOADING_</div></div>';
+  var _fc=document.getElementById('fs-ctrl');if(_fc)_fc.style.display='none';
+  fetchTab('fs',function(text){
+    if(!text){body.innerHTML='<div class="state"><div class="stit">ERR_LOAD</div><div class="smsg">Check console (F12) for details.</div></div>';return;}
+    fsData=parseLB(text);
+    if(!fsData.length){body.innerHTML='<div class="state"><div class="stit">NO_DATA</div><div class="smsg">Could not parse fighter rows. Open console (F12) for debug info.</div></div>';return;}
+    var teams={};fsData.forEach(function(d){teams[d.Team]=1;});
+    var undefeated=fsData.filter(function(d){return d.WinPct===1&&d.Rounds>0;}).length;
+    var topWAR=Math.max.apply(null,fsData.map(function(d){return d.FWAR;}));
+    var _fp=document.getElementById('fs-pills');if(_fp)_fp.innerHTML=
+      '<div class="metric"><div class="metric-val" style="color:var(--acc2)">'+fsData.length+'</div><div class="metric-lbl">Fighters</div></div>'+
+      '<div class="metric"><div class="metric-val">'+Object.keys(teams).length+'</div><div class="metric-lbl">Teams</div></div>'+
+      '<div class="metric"><div class="metric-val" style="color:var(--grn)">'+undefeated+'</div><div class="metric-lbl">Undefeated</div></div>'+
+      '<div class="metric"><div class="metric-val" style="color:var(--acc)">'+topWAR.toFixed(2)+'</div><div class="metric-lbl">Top WAR</div></div>';
+    var meta=document.getElementById('fs-meta');if(meta)meta.textContent=fsData.length+' Fighters · '+Object.keys(teams).length+' Teams · Individual Rankings · 2026 TBL Season';
+    buildFSFilters();
+    setFetchTime();
+    renderFS();
+  });
+}
+
+function renderFS(){
+  var data=filterFS();
+  var maxW=Math.max.apply(null,fsData.map(function(d){return Math.abs(d.FWAR);}));
+  var cnt=document.getElementById('fs-cnt');if(cnt)cnt.textContent=data.length+'/'+fsData.length;
+
+  function th(label,col){
+    var s=fsSortCol===col;
+    var arr=s?(fsSortDir===-1?' ↓':' ↑'):'';
+    return '<th class="'+(s?'s':'')+'" onclick="sortFS(\''+col+'\')">'+label+arr+'</th>';
+  }
+
+  var h='<table><thead><tr>'+
+    '<th style="width:32px">#</th>'+
+    th('Fighter','Fighter')+
+    th('Team','Team')+
+    '<th>Record</th>'+
+    th('Win%','WinPct')+
+    th('WAR','FWAR')+
+    th('PPR','PPR')+
+    th('Net Pts','TNP')+
+    th('Rnds','Rounds')+
+    '</tr></thead><tbody>';
+
+  data.forEach(function(d,i){
+    var warPct=Math.min(100,(Math.abs(d.FWAR)/maxW)*100);
+    var warCol=d.FWAR>0?'#00c965':d.FWAR<0?'#ff3c00':'#2e2b40';
+    var warCls=d.FWAR>0?'pos':d.FWAR<0?'neg':'neu';
+    var rec=d.Record.split('-');
+    var rh=rec.length===2?'<span class="rw">'+rec[0]+'</span><span class="rd">-</span><span class="rl">'+rec[1]+'</span>':d.Record;
+    var wpPct=Math.round(d.WinPct*100)+'%';
+    var wpCls=d.WinPct===1&&d.Rounds>0?'pct-above':d.WinPct===0&&d.Rounds>0?'pct-below':'pct-even';
+    h+='<tr>'+
+      '<td class="rk">'+(i+1)+'</td>'+
+      '<td><div class="fname">'+d.Fighter+'</div><div class="fmeta">'+d.Gender+' / '+d.Weight+'</div></td>'+
+      '<td><div class="team-box">'+d.Team+'</div></td>'+
+      '<td class="mono">'+rh+'</td>'+
+      '<td><span class="'+wpCls+'">'+wpPct+'</span></td>'+
+      '<td><div class="war-wrap"><div class="war-bar"><div class="war-fill" style="width:'+warPct+'%;background:'+warCol+'"></div></div><span class="war-val '+warCls+'">'+d.FWAR.toFixed(2)+'</span></div></td>'+
+      '<td class="mono '+(d.PPR>0?'pos':d.PPR<0?'neg':'neu')+'">'+d.PPR.toFixed(2)+'</td>'+
+      '<td class="mono '+(d.TNP>0?'pos':d.TNP<0?'neg':'neu')+'">'+d.TNP+'</td>'+
+      '<td class="mono neu">'+d.Rounds+'</td>'+
+      '</tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('fs-body').innerHTML=h;
+}
+
+function sortFS(col){
+  if(fsSortCol===col) fsSortDir*=-1; else{fsSortCol=col;fsSortDir=-1;}
+  renderFS();
+}
+
+/* ── TEAM STANDINGS ── */
+function loadST(){
+  var body=document.getElementById('st-body');
+  body.innerHTML='<div class="state"><div class="spinner"></div><div class="stit">LOADING_</div></div>';
+  fetchTab('st',function(text){
+    if(!text){body.innerHTML='<div class="state"><div class="stit">ERR_LOAD</div></div>';return;}
+    var p=parseGeneric(text);
+    stHeaders=p.headers;stRows=p.rows;
+    var validRows=stRows.filter(function(r){
+      for(var k in r){if(k.toLowerCase().indexOf('team')>=0&&r[k].trim())return true;}
+      return false;
+    });
+    var _sp=document.getElementById('st-pills');if(_sp)_sp.innerHTML=
+      '<div class="metric"><div class="metric-val" style="color:var(--acc2)">'+validRows.length+'</div><div class="metric-lbl">Teams</div></div>';
+    var meta=document.getElementById('st-meta');if(meta)meta.textContent=validRows.length+' Teams · 2026 TBL Season';
+    setFetchTime();
+    renderST();
+  });
+}
+
+function setST(el,key){
+  stSortKey=key;
+  document.querySelectorAll('.sort-btns .sbtn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  renderST();
+}
+
+function renderST(){
+  var rows=sortStData(stRows);
+  var cols=stHeaders.filter(function(h){return h&&h.toLowerCase()!=='rank'&&h!=='#';});
+  var h='<table><thead><tr><th style="width:32px">#</th>';
+  cols.forEach(function(c){h+='<th>'+c+'</th>';});
+  h+='</tr></thead><tbody>';
+  rows.forEach(function(row,i){
+    h+='<tr><td class="rk">'+(i+1)+'</td>';
+    cols.forEach(function(c){
+      var v=row[c]||'',cl=c.toLowerCase(),n=parseFloat(v);
+      if(cl.indexOf('team')>=0){
+        h+='<td><div class="fname">'+v+'</div></td>';
+      } else if(cl.indexOf('record')>=0){
+        var pts=v.split('-');
+        var rh=pts.length===2?'<span class="rw">'+pts[0]+'</span><span class="rd">-</span><span class="rl">'+pts[1]+'</span>':v;
+        h+='<td class="mono">'+rh+'</td>';
+      } else if(cl.indexOf('diff')>=0){
+        var dc=n>0?'diff-pos':n<0?'diff-neg':'diff-neu';
+        h+='<td class="'+dc+'">'+(n>0?'+':'')+v+'</td>';
+      } else if(!isNaN(n)&&v!==''){
+        h+='<td class="mono '+(n>0?'pos':n<0?'neg':'neu')+'">'+v+'</td>';
+      } else {
+        h+='<td class="mono neu">'+v+'</td>';
+      }
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('st-body').innerHTML=h;
+}
+
+/* ── NAV ── */
+function go(page,el){
+  document.querySelectorAll('.pg2').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('pg-'+page).classList.add('on');
+  if(el) el.classList.add('on');
+  curPage=page;
+  if(page==='fs') loadFS();
+  else if(page==='st') loadST();
+}
+
+loadFS();
+
+/* ── THEME TOGGLE ── */
+var isDark = true;
+function toggleTheme(){
+  isDark = !isDark;
+  var r = document.documentElement.style;
+  var btn = document.getElementById('theme-toggle');
+  if(isDark){
+    r.setProperty('--bg','#000000');
+    r.setProperty('--sur','#0d0d0d');
+    r.setProperty('--card','#111111');
+    r.setProperty('--card2','#1a1a1a');
+    r.setProperty('--b','rgba(255,255,255,0.08)');
+    r.setProperty('--bhi','rgba(255,255,255,0.16)');
+    r.setProperty('--txt','#f0eeff');
+    r.setProperty('--txt2','#9b95c0');
+    r.setProperty('--txt3','#5a5578');
+    btn.textContent = '☀ LIGHT';
+  } else {
+    r.setProperty('--bg','#f5f5f3');
+    r.setProperty('--sur','#ffffff');
+    r.setProperty('--card','#ffffff');
+    r.setProperty('--card2','#f0f0ee');
+    r.setProperty('--b','rgba(0,0,0,0.10)');
+    r.setProperty('--bhi','rgba(0,0,0,0.18)');
+    r.setProperty('--txt','#0a0a0a');
+    r.setProperty('--txt2','#444444');
+    r.setProperty('--txt3','#888888');
+    btn.textContent = '◑ DARK';
+  }
+}
+
+</script>
+</body>
+</html>
