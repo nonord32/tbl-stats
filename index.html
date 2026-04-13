@@ -902,9 +902,8 @@ function closeModal() {
   document.getElementById('fighter-modal').style.display = 'none';
 }
 
-document.getElementById('fighter-modal').addEventListener('click', function(e){
-  if (e.target === this) closeModal();
-});
+var _fm=document.getElementById('fighter-modal');
+if(_fm)_fm.addEventListener('click',function(e){if(e.target===this)closeModal();});
 
 /* ── TEAM BOX SCORE MODAL ── */
 function openTeamModal(el) {
@@ -1019,9 +1018,8 @@ function closeTeamModal() {
   document.getElementById('team-modal').style.display = 'none';
 }
 
-document.getElementById('team-modal').addEventListener('click', function(e){
-  if (e.target === this) closeTeamModal();
-});
+var _tm=document.getElementById('team-modal');
+if(_tm)_tm.addEventListener('click',function(e){if(e.target===this)closeTeamModal();});
 
 loadFS();
 
