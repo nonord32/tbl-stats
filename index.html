@@ -634,7 +634,6 @@ function loadFS(){
   fetchTab('fs',function(text){
     if(!text){body.innerHTML='<div class="state"><div class="stit">ERR_LOAD</div><div class="smsg">Check console (F12) for details.</div></div>';return;}
     fsData=parseLB(text);
-    setSheetDate(text);
     if(!fsData.length){body.innerHTML='<div class="state"><div class="stit">NO_DATA</div><div class="smsg">Could not parse fighter rows. Open console (F12) for debug info.</div></div>';return;}
     var teams={};fsData.forEach(function(d){teams[d.Team]=1;});
     var undefeated=fsData.filter(function(d){return d.WinPct===1&&d.Rounds>0;}).length;
@@ -645,6 +644,9 @@ function loadFS(){
       '<div class="metric"><div class="metric-val" style="color:var(--grn)">'+undefeated+'</div><div class="metric-lbl">Undefeated</div></div>'+
       '<div class="metric"><div class="metric-val" style="color:var(--acc)">'+topWAR.toFixed(2)+'</div><div class="metric-lbl">Top WAR</div></div>';
     var meta=document.getElementById('fs-meta');if(meta)meta.textContent=fsData.length+' Fighters · '+Object.keys(teams).length+' Teams · Individual Rankings · 2026 TBL Season';
+    var _sdm=text.match(/Updated[^\d]*([\d\/]+)/i);
+    var _sde=document.getElementById('sheet-updated');
+    if(_sde&&_sdm) _sde.textContent='Sheet updated: '+_sdm[1].trim();
     buildFSFilters();
     setFetchTime();
     renderFS();
