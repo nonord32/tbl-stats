@@ -885,10 +885,10 @@ function openFighterModal(el) {
       var isL = result.toLowerCase().indexOf('l')===0;
       var rowBg = i%2===0?'rgba(255,255,255,.02)':'transparent';
       html += '<tr style="border-bottom:1px solid var(--b);background:'+rowBg+'">';
-      html += '<td style="padding:8px 12px;color:var(--txt2)">'+(h[iDate]?r[h[iDate]]:'')+'</td>';
+      html += '<td style="padding:8px 12px;color:var(--txt)">'+(h[iDate]?r[h[iDate]]:'')+'</td>';
       html += '<td style="padding:8px 12px;color:var(--txt);font-weight:600">'+(h[iOpp]?r[h[iOpp]]:'')+'</td>';
-      html += '<td style="padding:8px 12px;color:var(--txt3)">'+(h[iWeight]?r[h[iWeight]]:'')+'</td>';
-      html += '<td style="padding:8px 12px;color:var(--txt3)">'+(h[iRound]?r[h[iRound]]:'')+'</td>';
+      html += '<td style="padding:8px 12px;color:var(--txt)">'+(h[iWeight]?r[h[iWeight]]:'')+'</td>';
+      html += '<td style="padding:8px 12px;color:var(--txt)">'+(h[iRound]?r[h[iRound]]:'')+'</td>';
       html += '<td style="padding:8px 12px;font-weight:700;color:'+(isW?'var(--grn)':isL?'var(--red)':'var(--txt3)')+'">'+result+'</td>';
       html += '<td style="padding:8px 12px;font-weight:700;color:'+(net>0?'var(--grn)':net<0?'var(--red)':'var(--txt3)')+'">'+net+'</td>';
       html += '</tr>';
@@ -934,6 +934,7 @@ function openTeamModal(el) {
     var iDate    = ci('Date of Fight','Date');
     var iOpp     = ci('Opponent Name','Opponent');
     var iMatchID = ci('Match ID');
+    var iOppTeam = ci('Opponent Team','Opp Team');
     var iRound   = ci('Round Number','Round');
     var iResult  = ci('Result');
     var iNet     = ci('Net Points');
@@ -968,16 +969,21 @@ function openTeamModal(el) {
         return ra-rb;
       });
       var date = h[iDate]?rows[0][h[iDate]]:'';
-      var oppFighter = h[iOpp]?rows[0][h[iOpp]]:'';
       var totalPF = rows.reduce(function(s,r){return s+(h[iPts]?parseFloat(r[h[iPts]])||0:0);},0);
       var totalPA = rows.reduce(function(s,r){return s+(h[iPtsA]?parseFloat(r[h[iPtsA]])||0:0);},0);
       var matchResult = totalPF > totalPA ? 'W' : totalPF < totalPA ? 'L' : 'D';
       var resultColor = matchResult==='W'?'var(--grn)':matchResult==='L'?'var(--red)':'var(--txt3)';
+      // Find opponent team - look for a row where team != our team
+      var oppTeam = '';
+      var allMatchRows = data.rows.filter(function(r){ return (h[iMatchID]?r[h[iMatchID]]:'')===mid; });
+      allMatchRows.forEach(function(r){
+        var rt = h[iTeam]?r[h[iTeam]]:'';
+        if(rt.trim().toLowerCase() !== team.trim().toLowerCase() && rt.trim()) oppTeam = rt.trim();
+      });
 
       html += '<div style="margin-bottom:24px;border:1px solid var(--b);border-radius:4px;overflow:hidden">';
-      // Match header
       html += '<div style="background:var(--card2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b)">';
-      html += '<div style="font-family:var(--fm);font-size:11px;color:var(--txt2)">'+date+' &nbsp;·&nbsp; Match '+mid+'</div>';
+      html += '<div style="font-family:var(--fm);font-size:12px;color:var(--txt)"><strong>'+date+'</strong>'+(oppTeam?' &nbsp;·&nbsp; vs <strong>'+oppTeam+'</strong>':'')+'</div>';
       html += '<div style="font-family:var(--fm);font-size:13px;font-weight:700;color:'+resultColor+'">'+matchResult+' &nbsp; '+totalPF+' – '+totalPA+'</div>';
       html += '</div>';
       // Round breakdown
@@ -996,7 +1002,7 @@ function openTeamModal(el) {
         var isL   = res.toLowerCase().indexOf('l')===0;
         var bg    = i%2===0?'rgba(255,255,255,.02)':'transparent';
         html += '<tr style="border-bottom:1px solid var(--b);background:'+bg+'">';
-        html += '<td style="padding:6px 12px;color:var(--txt3)">'+rnd+'</td>';
+        html += '<td style="padding:6px 12px;color:var(--txt);font-weight:600">'+rnd+'</td>';
         html += '<td style="padding:6px 12px;color:var(--txt);font-weight:600">'+name+'</td>';
         html += '<td style="padding:6px 12px;font-weight:700;color:'+(isW?'var(--grn)':isL?'var(--red)':'var(--txt3)')+'">'+res+'</td>';
         html += '<td style="padding:6px 12px;font-weight:700;color:'+(net>0?'var(--grn)':net<0?'var(--red)':'var(--txt3)')+'">'+net+'</td>';
@@ -1054,8 +1060,8 @@ function toggleTheme(){
 
 <!-- FIGHTER MODAL -->
 <div id="fighter-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#111;border:2px solid var(--acc);border-radius:6px;max-width:820px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column">
-    <div style="padding:16px 20px;border-bottom:2px solid var(--b);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <div style="background:var(--card);border:2px solid var(--acc);border-radius:6px;max-width:820px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:16px 20px;border-bottom:2px solid var(--b);background:var(--card2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <div>
         <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:var(--acc);text-transform:uppercase;margin-bottom:4px">Fighter Profile</div>
         <div id="modal-fighter-name" style="font-family:var(--fm);font-size:22px;font-weight:700;color:var(--txt)"></div>
@@ -1063,7 +1069,7 @@ function toggleTheme(){
       </div>
       <button onclick="closeModal()" style="background:transparent;border:1px solid var(--b);border-radius:4px;color:var(--txt3);font-family:var(--fm);font-size:11px;padding:6px 12px;cursor:pointer">✕ Close</button>
     </div>
-    <div id="modal-body" style="overflow-y:auto;padding:16px 20px">
+    <div id="modal-body" style="overflow-y:auto;padding:16px 20px;background:var(--card)">
       <div style="text-align:center;padding:40px;color:var(--txt3);font-family:var(--fm)">Loading fight history…</div>
     </div>
   </div>
@@ -1071,15 +1077,15 @@ function toggleTheme(){
 
 <!-- TEAM BOX SCORE MODAL -->
 <div id="team-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#111;border:2px solid var(--acc);border-radius:6px;max-width:900px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column">
-    <div style="padding:16px 20px;border-bottom:2px solid var(--b);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <div style="background:var(--card);border:2px solid var(--acc);border-radius:6px;max-width:900px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:16px 20px;border-bottom:2px solid var(--b);background:var(--card2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <div>
         <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:var(--acc);text-transform:uppercase;margin-bottom:4px">Team Box Scores</div>
         <div id="modal-team-name" style="font-family:var(--fm);font-size:22px;font-weight:700;color:var(--txt)"></div>
       </div>
       <button onclick="closeTeamModal()" style="background:transparent;border:1px solid var(--b);border-radius:4px;color:var(--txt3);font-family:var(--fm);font-size:11px;padding:6px 12px;cursor:pointer">✕ Close</button>
     </div>
-    <div id="modal-team-body" style="overflow-y:auto;padding:16px 20px">
+    <div id="modal-team-body" style="overflow-y:auto;padding:16px 20px;background:var(--card)">
       <div style="text-align:center;padding:40px;color:var(--txt3);font-family:var(--fm)">Loading match data…</div>
     </div>
   </div>
