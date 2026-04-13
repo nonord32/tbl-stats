@@ -325,7 +325,7 @@ tbody tr:first-child .rk{color:var(--acc)}
     <div class="site-footer">
       <div class="gl">
         <div class="gi"><strong>WAR</strong> Wins Above Replacement</div>
-        <div class="gi"><strong>PPR</strong> Points Per Round</div>
+        <div class="gi"><strong>NPPR</strong> Net Points Per Round</div>
         <div class="gi"><strong>Net Pts</strong> Total net points</div>
         <div class="gi"><strong>Win%</strong> Win percentage</div>
       </div>
@@ -672,7 +672,7 @@ function renderFS(){
     '<th>Record</th>'+
     th('Win%','WinPct')+
     th('WAR','FWAR')+
-    th('PPR','PPR')+
+    th('NPPR','NPPR')+
     th('Net Pts','TNP')+
     th('Rnds','Rounds')+
     '</tr></thead><tbody>';
@@ -799,9 +799,7 @@ function loadDataTab(cb) {
   if (dtData) { cb(dtData); return; }
   fetchTab('dt', function(text) {
     if (!text) { cb(null); return; }
-    var lines = text.replace(/
-/g,'').split('
-').filter(function(l){return l.trim();});
+    var lines = text.replace(/\r/g,'').split('\n').filter(function(l){return l.trim();});
     var headers = splitCSV(lines[0]).map(function(c){return c.replace(/"/g,'').trim();});
     var rows = [];
     for (var i=1;i<lines.length;i++) {
