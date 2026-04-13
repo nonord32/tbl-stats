@@ -8,20 +8,20 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#000000;
-  --sur:#0d0d0d;
-  --card:#111111;
-  --card2:#1a1a1a;
-  --b:rgba(255,255,255,0.08);
-  --bhi:rgba(255,255,255,0.16);
+  --bg:#f5f5f3;
+  --sur:#ffffff;
+  --card:#ffffff;
+  --card2:#f0f0ee;
+  --b:rgba(0,0,0,0.10);
+  --bhi:rgba(0,0,0,0.18);
   --acc:#ff3c00;
   --acc2:#7c5cfc;
-  --grn:#00c965;
-  --red:#ff3c00;
-  --yel:#ffd600;
-  --txt:#f0eeff;
-  --txt2:#9b95c0;
-  --txt3:#5a5578;
+  --grn:#00a550;
+  --red:#cc2200;
+  --yel:#b38600;
+  --txt:#0a0a0a;
+  --txt2:#444444;
+  --txt3:#888888;
   --fm:'IBM Plex Mono',monospace;
   --fb:Verdana,Geneva,Tahoma,sans-serif;
 }
@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--txt);font-family:var(--fb);font-size:12px;
 
 /* ── TOP NAV ── */
 #topnav{
-  background:var(--sur);
+  background:#111111;
   border-bottom:3px solid var(--acc);
   display:flex;align-items:stretch;
 }
@@ -291,9 +291,9 @@ tbody tr:first-child .rk{color:var(--acc)}
     <div class="ntab" data-page="st" onclick="go('st',this)">Team Standings</div>
   </div>
   <div class="nav-right" style="display:flex;align-items:center;gap:16px">
-    <a href="https://www.teamboxingleague.com" target="_blank" style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);text-decoration:none;white-space:nowrap">TBL Site</a>
-    <a href="https://www.instagram.com/teamboxingleague/" target="_blank" style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);text-decoration:none">IG</a>
-    <a href="https://www.youtube.com/@teamboxingleague" target="_blank" style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);text-decoration:none">YT</a>
+    <a href="https://www.teamboxingleague.com" target="_blank" style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-decoration:none;white-space:nowrap">TBL Site</a>
+    <a href="https://www.instagram.com/teamboxingleague/" target="_blank" style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-decoration:none">IG</a>
+    <a href="https://www.youtube.com/@teamboxingleague" target="_blank" style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-decoration:none">YT</a>
     <button id="theme-toggle" onclick="toggleTheme()" style="
       background:var(--acc);border:none;
       border-radius:4px;color:#fff;
