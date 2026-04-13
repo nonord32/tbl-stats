@@ -291,7 +291,6 @@ tbody tr:first-child .rk{color:var(--acc)}
     <div class="ntab" data-page="st" onclick="go('st',this)">Team Standings</div>
   </div>
   <div class="nav-right" style="display:flex;align-items:center;gap:12px">
-    <span id="fetch-time"></span>
     <button id="theme-toggle" onclick="toggleTheme()" style="
       background:var(--acc);border:none;
       border-radius:4px;color:#fff;
@@ -344,7 +343,7 @@ tbody tr:first-child .rk{color:var(--acc)}
       </div>
     </div>
     <div class="ctrl">
-      <div class="sort-label">Sort_by</div>
+      <div class="sort-label">Sort by</div>
       <div class="sort-btns">
         <button class="sbtn on" onclick="setST(this,'record')">Record</button>
         <button class="sbtn" onclick="setST(this,'pf')">PF</button>
@@ -635,6 +634,7 @@ function loadFS(){
   fetchTab('fs',function(text){
     if(!text){body.innerHTML='<div class="state"><div class="stit">ERR_LOAD</div><div class="smsg">Check console (F12) for details.</div></div>';return;}
     fsData=parseLB(text);
+    setSheetDate(text);
     if(!fsData.length){body.innerHTML='<div class="state"><div class="stit">NO_DATA</div><div class="smsg">Could not parse fighter rows. Open console (F12) for debug info.</div></div>';return;}
     var teams={};fsData.forEach(function(d){teams[d.Team]=1;});
     var undefeated=fsData.filter(function(d){return d.WinPct===1&&d.Rounds>0;}).length;
