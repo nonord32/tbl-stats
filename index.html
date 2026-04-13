@@ -310,7 +310,7 @@ tbody tr:first-child .rk{color:var(--acc)}
       <div class="hero-left">
         <div class="hero-tag">Individual Rankings · 2026 TBL Season</div>
         <div class="hero-title">FIGHTER <span>STATS</span></div>
-        <div class="hero-sub" id="fs-meta"></div>
+        <div class="hero-sub" id="fs-meta"></div><div class="hero-sub" id="last-updated" style="margin-top:4px;color:var(--acc);opacity:.7"></div>
       </div>
     </div>
     <div class="ctrl" id="fs-ctrl" style="display:none">
@@ -330,7 +330,7 @@ tbody tr:first-child .rk{color:var(--acc)}
         <div class="gi"><strong>Net Pts</strong> Total net points</div>
         <div class="gi"><strong>Win%</strong> Win percentage</div>
       </div>
-      <p>Data via Google Sheets · Not live · Updates on page refresh</p>
+      <p></p>
     </div>
   </div>
 
@@ -361,7 +361,7 @@ tbody tr:first-child .rk{color:var(--acc)}
         <div class="gi"><strong>PA</strong> Points Against</div>
         <div class="gi"><strong>Diff</strong> Point Differential</div>
       </div>
-      <p>Data via Google Sheets · Not live · Updates on page refresh</p>
+      <p></p>
     </div>
   </div>
 
@@ -475,6 +475,17 @@ function parseLB(text){
       Record:rec,WinPct:wp,Wins:w,Losses:l,
     });
   }
+
+  // Pull "Updated:" date from sheet header rows
+  for(var u=0;u<Math.min(hi,8);u++){
+    var uline=(lines[u]||'').replace(/[",]/g,'').trim();
+    if(uline.toLowerCase().indexOf('updated')>=0){
+      var el=document.getElementById('last-updated');
+      if(el) el.textContent=uline;
+      break;
+    }
+  }
+
   return rows;
 }
 
